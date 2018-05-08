@@ -18,7 +18,7 @@ https://www.rabbitmq.com/install-windows.html (see section Install the server)
 Get the rabbitmq from https://www.rabbitmq.com/install-windows.html (make sure its compatibility with erlang).
 You can download any of installer from Bintray of Github.
 Once downloaded, right click on install file, go to properties and uncheck if blocking option is enabled (if available at bottom, else ignore)
-To install, right click on install file and choose run as an administrator.
+To install, right click on install file and **choose run as an administrator**.
 
 3. **Enable management console :**  
 **(open command prompt in administrator mode)**,
@@ -47,7 +47,11 @@ That prints message as:
   
 4. **Restart the service :**
 From windows start menu, find the Rabbitmq stop and start commands. Using them restart the rabbitmq server.
+*If normal stop and start does not work, try them in administrator mode*
 
 5. **Access rabbitmq console :**
 Open in browser http://localhost:15672 to access the management console.
+The defualt credentials are guest/guest.
+
+Note: The above steps work with windows 10 as well.
 
