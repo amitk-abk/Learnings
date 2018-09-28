@@ -1,11 +1,11 @@
 # Scala
 
-Scala, short for Scalable Language, is a hybrid functional programming language.
-It was created by Martin Odersky.
+Scala, short for Scalable Language, is a hybrid functional programming language.  
+It was created by Martin Odersky.  
 Scala is a pure object-oriented language in the sense that every value is an object and every operation is a method call.  
 It runs on the standard Java platform and interoperates seamlessly with all Java libraries.  
 Scala is a kind of mix of object oriented and functional programming ideas in what is called as statically typed language.  
-Scala is designed to be interoperable with Java & JVM -  Scala code can call Java methods, access Java fields, inherit from Java classes, and implement Java interfaces. And scala code makes heavy use of Java libraries and also heavily re-uses Java types e.g. Int, Scala arrays are mapped to java arrays. 
+Scala is designed to be interoperable with Java & JVM -  Scala code can call Java methods, access Java fields, inherit from Java classes, and implement Java interfaces. And scala code makes heavy use of Java libraries and also heavily re-uses Java types e.g. Int, Scala arrays are mapped to java arrays.
 
 ## Why Scala
 
@@ -19,7 +19,6 @@ The central drive behind Scala is to make life easier and more productive for th
 - Scala is statically typed language but it avoids verbosity by using type inference and gains flexibility by deploying pattern matching.
 
 For more details check: [Why-Scala](https://www.lightbend.com/blog/why-scala)
-
 
 ### Scala Basics: General
 
@@ -36,28 +35,28 @@ It denotes a reference value which refers to a special "null" object.
 
 - Immutability is norm in Scala.
 
-Entities are declared as immutable using 'val'.  
-e.g. val PI = 3.14  
+Entities are declared as **immutable** using **'val'**.  
+e.g. **val PI = 3.14**  OR  **val PI:Double = 3.14** though type specification is optional.  
 This declares immutable variable called PI.
 
-  Commonly used collections are immutable too.
-  Modifying an immutable collection returns a new collection, leaving the original unchanged.
+  > Commonly used collections are immutable too.  
+  > Modifying an immutable collection returns a new collection, leaving the original unchanged.
 
 - Mutable data items are created using 'var' e.g. var thisCanChange = 10
 
-- Multiple assignments:
-	Scala supports multiple assignments.
-	If a code block or method returns a Tuple (Tuple − Holds collection of Objects of different types), the Tuple can be assigned to a val variable.
-		e.g. val (myVar1, myVar2) = Pair(40, "Foo") OR val (myVar1: Int, myVar2: String) = Pair(40, "Foo")
+- Multiple assignments:  
+ Scala supports multiple assignments.  
+ If a code block or method returns a Tuple (Tuple − Holds collection of Objects of different types), the Tuple can be assigned to a val variable.  
+ e.g. val (myVar1, myVar2) = Pair(40, "Foo") OR val (myVar1: Int, myVar2: String) = Pair(40, "Foo")
 
-- Scala uses ***type inference*** to determine the type of the data, it helps scala to infer what kind of storage unit or data item is.
-When you assign an initial value to a variable, the Scala compiler can figure out the type of the variable based on the value assigned to it.
-Still, You can define any type of Scala variable by mentioning its data type as:
-		var myVar :Int;
-		val myVal :String;
+- Scala uses ***type inference*** to determine the type of the data, it helps scala to infer what kind of storage unit or data item is.  
+ When you assign an initial value to a variable, the Scala compiler can figure out the type of the variable based on the value assigned to it.  
+ Still, You can define any type of Scala variable by mentioning its data type as:  
+    var myVar :Int;
+    val myVal :String;
 
-- Value types in scala are mostly wrapper over java's:
-		Byte, Short, Char, Int, Long, Float, Double, Boolean and Unit.
+- Value types in scala are mostly wrapper over java's:  
+  **Byte, Short, Char, Int, Long, Float, Double, Boolean and Unit.**
 
 - Scala does not support break or continue statement like Java does.
 
@@ -70,6 +69,8 @@ Still, You can define any type of Scala variable by mentioning its data type as:
 
     Scala will substitute the values for $greet and $name.
 ```
+
+- you can instantiate objects, or class instances, using ***new***.
 
 #### Expression v/s statements
 
@@ -130,6 +131,11 @@ var x = for (day <- daysOfWeekList) yield {
 Returns>> x: List[String] = List("Monday, first day", "Tue", "Wed", "Thur", "Fri", "Sat", "Sunday, last day")
 ```
 
+Basic **for expression:**  
+e.g. for(item <- items>) println(item)  
+Here, the println is applied to every item from items, both are on the either side of symbol <-  
+You can say "in" for the <- symbol. You can read ***for (item <- items)*** , therefore, as "for item in items."
+
 ##### Function and Expressions
 
 A function is really just a named, reusable expression block.
@@ -150,9 +156,18 @@ Both function and expression blocks in scala:
 - closures - Functions that retain the referencing environment.
 - parameter groups - logical groups of parameters to a function.
 - Function is of type &lt;function1&gt;, &lt;function2&gt; (until &lt;function23&gt; & hence upto 23 arguments to max) family of **traits**.
+- Function definitions start with **def**, the function's name is followed by a comma-separated list of parameters in parentheses. A type annotation must follow every function parameter, preceded by a colon (e.g. x: Int, y: Int), because the Scala compiler does not infer function parameter types. After that parameter list separated with : is return type (e.g. : Int).
 
 ``` Scala
 Function example:
+  def calculate(x: Int, y: Int): Int = {
+      (x + y) * 5
+  }
+
+Another example:
+  def max(x: Int, y: Int) = if (x > y) x else y
+
+One More example:
   val getArea = (radius : Double) => {
     val PI = 3.14
     PI * radius * radius
@@ -183,7 +198,12 @@ Another example:
     val getArea = getRectangleArea _
 ```
 
-#### Functions and methods:
+#### Function literal
+
+A function literal is typically part of function that is main and is without name part. The syntax for a function literal is a **list of named parameters**, in parentheses (e.g. (x: Int, y: Int)), **a right arrow**, and then the **body of the function** (e.g. x * y).  
+e.g. (x: Int, y: Int) => x * y
+
+#### Functions and methods
 
 A Scala method is a part of a class which has a name, a signature, optionally some annotations, and some bytecode.  
 A **function** in Scala is a **complete object** which **can be assigned to a variable**.</br>
@@ -448,6 +468,13 @@ Anonymous way to instantiate class:
 #### Classes and Objects
 
 All fields and methods in a class are by default **public**.  
+You can instantiate objects, or class instances, using ***new***.  
+
+```Scala
+e.g. val str = new Array[String](3)  
+        OR
+     val str: Array[String] = new Array[String](3)
+```
 
 ```Scala
 e.g.
@@ -725,11 +752,12 @@ Every user-defined type in Scala is a subtype of **AnyRef**.
 For more details [refer this.](https://docs.scala-lang.org/tour/unified-types.html)
 
 **Emptiness in Scala:**
+
 - **null** : same as in java, this is for reference type only and not for value type. It itself is a value and not a type.
 - **Null** : It is a type, it is a trait and not a value. *null* is a type of **Null**.
 - **Nothing** : It is a type, it is a trait. **Nothing** can never be instantiated. **Nothing extends everything in Scala** as it is bottom of all types & reference.
 - **Nil** : It is a special value associated with an empty List. Nil is a singletone instance of List[Nothing]  
-	Lists are internally implmented as singly linked list. Nil is used to signify the end of the list e.g. while (listIter != Nil) .......
+ Lists are internally implmented as singly linked list. Nil is used to signify the end of the list e.g. while (listIter != Nil) .......
 - **None** : None is a special value associated with an Option (Option is a type safe way of representing in scala that a value may or may not be present)
 - **Unit** : It is same as **void** in java.
 
@@ -765,98 +793,127 @@ There are no break statements in scala.</br>
 Matches can be on type, value or condition.</br>
 
 It looks like this:
+
 ```Scala
 value match {
-		case pattern guard => expression
-		case ...
-		case ...
-	}
+    case pattern guard => expression
+    case ...
+    case ...
+}
 ```
 
 Each case is made up of **patterns**, optionally a **guard condition** and **an expression** to evaluate on successful match.
+
 ```Scala
 val typeOfDay = dayOfWeek match {
-					case "Monday" => "First day of week"
-					case "Tuesday" | "Wednesday" | "Thursday" | "Friday" => "Mid week days"
-					case "Saturday"|"Sunday" => "Weekend"
-				}
+        case "Monday" => "First day of week"
+        case "Tuesday" | "Wednesday" | "Thursday" | "Friday" => "Mid week days"
+        case "Saturday"|"Sunday" => "Weekend"
+   }
 
 The second and third case are OR-ed expressions, they form compound ORed condition.
 ```
+
 If no value matches then error would occur (Scala.MatchError), so need to set up catch-all.
 
 **Value binding pattern:**
 When none of existing case expressions match the input the value binding pattern can be used :
+
 ```Scala
-	val typeOfDay = dayOfWeek match {
-		case "Monday" => "First day of week"
-		case "Saturday"|"Sunday" => "Weekend"
-		case someOtherDay => {
-			someOtherDay
-		}
-		case _ => {
-			println("Error")
-		}
-	}
+val typeOfDay = dayOfWeek match {
+    case "Monday" => "First day of week"
+    case "Saturday"|"Sunday" => "Weekend"
+    case someOtherDay => {
+        someOtherDay
+    }
+    case _ => {
+        println("Error")
+    }
+}
 ```
 
 **case expression on type of variable:**
 The expression in case evaluates to true if the type of the variable matches to that in case.
+
 ```Scala
-	val radius: Any = 10
-	val typeOfRadius = radius match {
-		case radius: Int => "Integer"
-		case radius: String => "String"
-		case radius: Double => "Double"
-		case _ => "Any"
-	}
+    val radius: Any = 10
+    val typeOfRadius = radius match {
+        case radius: Int => "Integer"
+        case radius: String => "String"
+        case radius: Double => "Double"
+        case _ => "Any"
+    }
 ```
 
 ### Scala Containers: Tuples, Lists, Maps, Options, Arrays, Mutable Collections
 
 **Immutable collections:**
-			Neither collection length nor can it's contents be changed.
+Neither collection length nor can it's contents be changed.
 
 **Mutable Collections:**
-			Collection length as well as contents can be changed.
-			They reside in **scala.collection.mutable** namespace.
+Collection length as well as contents can be changed.  
+They reside in **scala.collection.mutable** namespace.
 
 **Arrays:**
-			Fixed length, however contents can be modified.
 
-Both mutable and immutable collections implement java **iterable** interface.
+Fixed length, however contents can be modified.  
+Arrays are simply instances of classes like any other class in Scala.  
+Both mutable and immutable collections implement java **iterable** interface.  
+Arrays in Scala are accessed by placing the index inside parentheses.
 
-#### Tuples:
--	They are same as tuples in math. They are bunch of values enclosed within parentheses.
+```Scala
+Array example: val greetStrings = new Array[String](3)
+
+//Accessing array:
+greetStrings(0) = "Hello"
+greetStrings(1) = ", "
+greetStrings(2) = "world!\n"
+
+//Iterating array
+for(i <- 0 to 2) println(greetStrings(i))
+```
+
+When you apply parentheses surrounding one or more values to a variable, Scala will transform the code into an invocation of a method named apply on that variable. So **greetStrings(i)** gets transformed into **greetStrings.apply(i)**. Thus accessing an element of an array in Scala is simply a method call like any other.
+
+#### Tuples
+
+- They are same as tuples in math. They are bunch of values enclosed within parentheses.
 - They are ordered containers of values of same or different types.
 - They are not technically collections.
 - Tuples are indexed starting with 1 and not 0.
 - Tuples are immutable, any transformation on it results in new tuple.
 - Tuples implement traits Tuple1, Tuple2 .....
+
+```Scala
+   e.g.
+       val personInfo = ("Vitthal", "Srinivasan", 36, "M")
+       val genderPair = "Vitthal" -> "M"  //This is key value pair forming a Tuple.
 ```
-	e.g.
-	val personInfo = ("Vitthal", "Srinivasan", 36, "M")
-	val genderPair = "Vitthal" -> "M"     ------------- This is key value pair forming a Tuple.
-```
+
 - Two value tuple is nothing but a pair which can be created using **->**
 - Scala's type inference identifies the type of elements in tuple.
 - Tuples are created for ease of creating them and to pass around.
 
 **Accessing element in Tuple:**
+
 1. In order to access the individual element in tuple, ._ (dot underscore) notation is used.
-```
+
+```Scala
 e.g.
-	personInfo._1 gives "Vitthal"
-	personInfo._2 gives "Srinivasan"
+    personInfo._1 gives "Vitthal"
+    personInfo._2 gives "Srinivasan"
 ```
 
-2. Tuple can be assigned to list of variables on left side.
-```
+2.Tuple can be assigned to list of variables on left side.
+
+```Scala
 e.g.
 val (firstName, lastName, age, gender) = personInfo
 ```
-	You can use placeholder _ to ignore any specific value:
-```
+
+You can use placeholder _ to ignore any specific value:
+
+```Scala
 e.g.
 val (firstName, lastName, _, gender) = personInfo    ------------- age is ignored
 ```
@@ -864,71 +921,98 @@ val (firstName, lastName, _, gender) = personInfo    ------------- age is ignore
 **Iterating Tuples:**  
 Since tuple is not a collection per say, the syntax to iterate it is different.
 You need to use &lt;&lt;tupleName&gt;&gt;.productIterator.foreach{&lt;&lt;&gt;&gt;} syntax
-```
+
+```Scala
 e.g.
 personInfo.productIterator.foreach{i => println("value:" + i)}
 ```
 
 **To get number of elements in tuple:**  
 Use **productArity**
-```
+
+```Scala
 e.g. personInfo.productArity     --------------------- gives 4
 ```
 
 **Passing tuples to functions:**  
 Call the .tupled() method on the function object.
-```
+
+```Scala
 e.g.
 val genderPair = "Vitthal" -> "M"
 def printPersonGender(name: String, gender: String) = println(s"Name is $name and gender is $gender")
 
 To call it using tuple:
-		(printPersonGender _).tupled(genderPair)
-	//here method is converted
-	//to function object with _
+            (printPersonGender _).tupled(genderPair)
+            //here method is converted
+            //to function object with _
 ```
 
-#### Lists :
+#### Lists
 
 - Lists are usually immutable collections but they can be mutable as well.
 - Immutable lists are of fixed length and the objects i.e. elements inside the list can not be changed once list is created.
 - They are singly linked list and terminated with Nil (special value, technically it is list of nothing i.e. List[Nothing]).
 - Lists are indexed starting from 0.
 
-**Ways of creating list:**  
-1. Cons (constructor operator ::) operator   
-``` e.g. val weekDays = "Mon" :: "Tue" :: "Wed" :: "Thurs" :: "Fri" :: Nil ```
-   It is right associative i.e. it starts at extreme right and works to left i.e. it starts with Nil and keeps on adding elements to its right making it.
-as Mon -> Tue -> Wed -> Thurs -> Fri -> Nil  (it is like add element to head of singly linked list)
-  It takes element on it's right and add on it to its left.
-  This approach is not elegant as it exposed underlying implementation.
+**Ways of creating list:**
 
-2. Prefered way   
+1. Cons (constructor operator ::) operator
+
+```Scala
+e.g. val weekDays = "Mon" :: "Tue" :: "Wed" :: "Thurs" :: "Fri" :: Nil
+```
+
+  It is right associative i.e. it starts at extreme right and works to left i.e. it starts with Nil and keeps on adding elements to its right making it.  
+as *Mon -> Tue -> Wed -> Thurs -> Fri -> Nil*  (it is like add element to head of singly linked list)
+  It takes element on it's right and add on it to its left.
+  This approach is not elegant as it exposed underlying implementation.  
+  If the method name ends in a colon, the method is invoked on the right operand. Therefore, in *"Sat" :: weekEndDays*, the :: method is invoked on weekEndDays, passing in "Sat", like this: *weekEndDays.::("Sat")*.
+
+2. Prefered way  
+
 Using List() directly to create List.
 > val weekDays = List("Mon", "Tue", "Wed", "Thurs", "Fri")
 
-3. Creating a list by concatinating two lists:  
-	3.1. Using ::: operator   
-	This is also right associative  
-	```val days = weekDays ::: weekendDays```
+3. Creating a list by concatinating two lists:
 
-	3.2. Using ++ operator   
-	```val days = weekDays ++ weekendDays```
-	> The operator ++ can be used with all collections (Traversable elements) not just list.  
-	> The difference between above methods is ::: operator works only with lists but ++ operator works with any Traversable.
+3.1. Using ::: operator  
+    This is also right associative  
 
-	3.3. Using flatten method   
-	It takes list of lists and combine or squeeze, or flatten all those elements into one single large list
-	  ```val daysAgain = List(weekDays, weekendDays).flatten ```
+```Scala
+   e.g. val days = weekDays ::: weekendDays
+```
 
-	3.4. Using zip method : list of tuples   
-	```
-	dayIndices zip dayIndices
-	creates list like List((1,1), (2,2), (3,3), (4,4))
-	```
-	Each element is a tuple of the corresponding elements of the two lists.
+3.2. Using ++ operator  
+
+```Scala
+   e.g. val days = weekDays ++ weekendDays
+```
+
+> The operator ++ can be used with all collections (Traversable elements) not just list.  
+> The difference between above methods is ::: operator works only with lists but ++ operator works with any Traversable.
+
+3.3. Using flatten method  
+It takes list of lists and combine or squeeze, or flatten all those elements into one single large list
+
+```Scala
+val daysAgain = List(weekDays, weekendDays).flatten
+```
+
+3.4. Using zip method : list of tuples  
+
+```Scala
+    dayIndices zip dayIndices
+    creates list like List((1,1), (2,2), (3,3), (4,4))
+```
+
+Each element is a tuple of the corresponding elements of the two lists.  
+
+> Class List does offer an "append" operation — it's written **:+**
+> But this operation is rarely used, because the time it takes to append to a list grows linearly with the size of the list, whereas prepending with :: takes constant time.
 
 **List Methods:**  
+
 - **.head** : returns the element at head of the list (weekDays.head)
 - **.tail** : returns the list of all elements in original list except the first i.e. all elements except head element.
 - **.size** : returns the size of the list.
@@ -1073,16 +1157,19 @@ val states = stateCodes.keySet.toList
 **Getting the list of values from map:**  
 val codes = stateCodes.values.toList
 
-
-
 #### Sets
 
 Sets are very much similar to that of lists but they are unordered and have uniqueness constraint.
 
-
 Lists, Sets and Maps are all immutable collections. They can not grow or shrink neither the collection elements can be changed/modified.  
 There are corresponding mutable set of collections for each of them, they can shrunk/grow and their elements can be modified too.  
 
+```Scala
+Adding element to mutable set:
+example:
+   var carSet = Set("Merc", "BMW")
+   carSet += "Toyota"
+```
 
 #### creating mutable collections
 
@@ -1220,8 +1307,17 @@ Also,
 
 Example of **apply method**
 
+When you apply parentheses surrounding one or more values to a variable, Scala will transform the code into an invocation of a method named **apply** on that variable.  
+Any application of an object to some arguments in parentheses will be transformed to an **apply** method call if that type of object actually defines an **apply** method.  
+**THIS APPLY METHOD IS DEFINED ON COMPANION OBJECT**
+
 ```Scala
 
+Example:
+    val str = new Array[String](3)
+    val g = str(0) ------> same as str.apply(0)
+
+Another example:
     class Customer(name: String, address: String)
         object Customer {
             def apply(name: String, address: String) = new Customer(name, address)
@@ -1268,7 +1364,16 @@ Another example:
 
 ```
 
+val numbers = Array("Zero", "One", "Two")  
+Here, actually **apply** method is getting called such as:  
+val numbers = Array.apply("Zero", "One", "Two")  
+This **apply** method creates and returns a new array. 
+
+
+
 Example of **update method**
+
+When an assignment is made to a variable to which parentheses and one or more arguments have been applied, the compiler will transform that into an invocation of an update method that takes the arguments in parentheses as well as the object to the right of the equals sign.
 
 e.g. instance(a) = b is translated as instance.update(a, b)  
 
@@ -1278,6 +1383,11 @@ OR yellowPages("Vinay") = "7788556611"
 
 ```Scala
 
+Example:
+    val str = new Array[String](3)
+    str(0) = "Greetings" -------> Same as str.update(0, "Greetings")
+
+Another Example:
     class Directory {
         private val numbers = scala.collection.mutable.Map(
            "Rajesh" -> "986532147874",
@@ -1486,6 +1596,7 @@ Once all messages in mailbox are processed, actor suspends and wait for new inco
 
 In functional programming, the methods should not have any **side effects**. They should communicate with their surrounding only by accepting the input and providing the result.  
 Such methods can be called as Referentially transparent - meaning that for any given input the method call could be replaced by it's result without affecting the semantics of the program.  
-Functional languages encourage immutable data structures and referentially transparent methods.
+Functional languages encourage immutable data structures and referentially transparent methods.  
+A method's only act should be to compute and return a value without any side effect (following SRP - Single Responsibility Principle). That way methods become reliable and reusable.
 
 
