@@ -2,7 +2,10 @@
 
 Scala, short for Scalable Language, is a hybrid functional programming language.
 It was created by Martin Odersky.
-Scala is a pure object-oriented language in the sense that every value is an object.
+Scala is a pure object-oriented language in the sense that every value is an object and every operation is a method call.  
+It runs on the standard Java platform and interoperates seamlessly with all Java libraries.  
+Scala is a kind of mix of object oriented and functional programming ideas in what is called as statically typed language.  
+Scala is designed to be interoperable with Java & JVM -  Scala code can call Java methods, access Java fields, inherit from Java classes, and implement Java interfaces. And scala code makes heavy use of Java libraries and also heavily re-uses Java types e.g. Int, Scala arrays are mapped to java arrays. 
 
 ## Why Scala
 
@@ -11,6 +14,9 @@ The central drive behind Scala is to make life easier and more productive for th
 - It cuts down on boilerplate, so programmers can concentrate on the logic of their problems.
 - It adds expressiveness, by tightly fusing object-oriented and functional programming concepts in one language
 - And it protects existing investments by running on the Java Virtual Machine and interoperating seamlessly with Java.
+- Scala brings unique fusion of functional programming and object oriented programming thereby making it possible to express new kinds of programming patterns and component abstractions.
+- It deploys concise programming style and syntax - Scala programs tend to be short upto factor of 10 compared to java. It tends to avoid lot of boilerplate.
+- Scala is statically typed language but it avoids verbosity by using type inference and gains flexibility by deploying pattern matching.
 
 For more details check: [Why-Scala](https://www.lightbend.com/blog/why-scala)
 
@@ -1025,6 +1031,8 @@ val result = numbers.reduceLeft(_ - _)    =========> -190
 - Immutable associative containers (associatve because they contain key value pair & key is used to look up the associated value in map).
 - Maps in Scala are not language syntax. They are library abstractions that you can extend and adapt.
 - Maps are essentially collections of two element tuples i.e. key-value pairs.
+- Maps in scala are library abstractions that can be extended per user needs.
+- There can be various particular implementations like HashMap, TreeMap or ParMap (Parallel Map - obtained by invoking par method)
 
 ##### Creating Map
 
@@ -1452,18 +1460,32 @@ However, Scala also offers an additional library that essentially implements Erl
 
 Actors are **concurrency abstractions** that can be implemented on top of threads.
 They communicate by **sending messages** to each other.
-An actor can perform two basic operations: **message send** and **receive**.
+An actor can perform two basic operations: **message send** and **receive**.  
 
+The **send** operation is denoted by ! (exclamation mark) and it sends message to an Actor e.g. messageReceiver ! msg, here messageReceiver is an Actor.  
 A **send is asynchronous**; that is, the sending actor can proceed immediately, without waiting for the message to be received and processed.
 
-Every **actor has a mailbox** in which incoming messages are queued. An actor handles messages that have arrived in its mailbox via a receive block.
+
+Every **actor has a mailbox** in which incoming messages are queued. An actor handles messages that have arrived in its mailbox via a **receive** block.
 
 ```Scala
 
-receive {
+def receive {
     case Msg1 => ... // handle Msg1
     case Msg2 => ... // handle Msg2
     // ...
 }
 
 ```
+
+A receive block can contain number of cases that each query the mailbox with a pattern - message pattern. As per pattern matching, the first message in the mailbox that matches the case is selected and associated action to it is performed.  
+Once all messages in mailbox are processed, actor suspends and wait for new incoming messages.
+
+
+### Functional programming
+
+In functional programming, the methods should not have any **side effects**. They should communicate with their surrounding only by accepting the input and providing the result.  
+Such methods can be called as Referentially transparent - meaning that for any given input the method call could be replaced by it's result without affecting the semantics of the program.  
+Functional languages encourage immutable data structures and referentially transparent methods.
+
+
