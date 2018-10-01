@@ -1117,6 +1117,8 @@ val result = numbers.reduceLeft(_ - _)    =========> -190
 - Maps are essentially collections of two element tuples i.e. key-value pairs.
 - Maps in scala are library abstractions that can be extended per user needs.
 - There can be various particular implementations like HashMap, TreeMap or ParMap (Parallel Map - obtained by invoking par method)
+- There is base **Map trait** in **scala.collection** package and **mutable trait** in **scala.collection.mutable** and **immutable trait** in **scala.collection.immutable** both **extending** trait in base package.
+- Concrete implmentation like HashMap can extend either the mutable or immutable trait.
 
 ##### Creating Map
 
@@ -1124,7 +1126,24 @@ val result = numbers.reduceLeft(_ - _)    =========> -190
 
 val statesCodes = Map("California" -> "CA", ("Vermont", "VT"))
 
+Mutable Map example:
+    import scala.collection.mutable
+
+    val pizzaIngredients = Map[Int, String]()
+    pizzaIngredients += (1 -> "Pizza Base")
+    pizzaIngredients += (2 -> "Sauce")
+    pizzaIngredients += (3 -> "Cheese")
+    pizzaIngredients += (4 -> "Toppings")
+    println(pizzaIngredients)
+    println("3rd item:" + pizzaIngredients(3))
+
+    The scala compiler transforms a binary operation expression like 1 -> "Pizza Base" into (1).->("Pizza Base") so here you are calling method named "->" on integer with value 1, passing the string "Pizza Base".
+
+    The method "->" you can invoke on any object in Scala program. It returns a two-element tuple containing the key and value.
+    Here, that tuple is passed to "+=" method of the map object: pizzaIngredients.
+
 ```
+
 The resulting object is a **scala.collection.immutable.Map**
 
 **Accessing element in Map:**  
@@ -1159,17 +1178,41 @@ val codes = stateCodes.values.toList
 
 #### Sets
 
-Sets are very much similar to that of lists but they are unordered and have uniqueness constraint.
+Sets are very much similar to that of lists but they are unordered and have uniqueness constraint.  
+The Scala API contains a base trait for sets. Scala then provides two subtraits, one for mutable sets and another for immutable sets.  
+Concrete set classes in the scala API e.g. HashSet, either extends mutable or immutable Set trait.
 
 Lists, Sets and Maps are all immutable collections. They can not grow or shrink neither the collection elements can be changed/modified.  
 There are corresponding mutable set of collections for each of them, they can shrunk/grow and their elements can be modified too.  
 
 ```Scala
+Set Heirarchy:
+scala.collection.immutable.Set <<trait>> extends scala.collection.Set
+scala.collection.mutable.Set <<trait>> extends scala.collection.Set
+
+scala.collection.immutable.HashSet extends scala.collection.immutable.HashSet
+scala.collection.mutable.HashSet extends scala.collection.mutable.HashSet
+```
+
+```Scala
 Adding element to mutable set:
 example:
    var carSet = Set("Merc", "BMW")
-   carSet += "Toyota"
+   carSet += "Toyota"               //Use + to add new element to a set.
+
+   As shown here, you can create the Set in scala by invoking apply() on companion object for scala.collection.immutable.set which is same as Set("Merc", "BMW")
+   So by default the immutable set gets created.
+
+example: To create a concret Set
+    import scala.collection.immutable.HashSet
+
+    val pizzaSet = HashSet("Pizza Base", "Sause")
+    pizzaSet += "Cheese"
+    println(pizzaSet)
 ```
+
+On both mutable and immutable sets, the + method will create and return a new set with the element added.  
+Although mutable sets offer an actual += method, immutable sets do not.
 
 #### creating mutable collections
 
@@ -1210,6 +1253,7 @@ case util.Failure(error) => "Something terrible happened!"
 Higher order methods of collections take in function objects and then go ahead and apply those function objects to the contents of our collection.  
 
 **Categories:**
+
 1. Higher order functions acting one iteam at a time e.g. Map, foreach, filter
 2. Higher order functions operating on multiple elements at a time e.g. Scan, Fold, Reduce.
 
@@ -1591,7 +1635,6 @@ def receive {
 A receive block can contain number of cases that each query the mailbox with a pattern - message pattern. As per pattern matching, the first message in the mailbox that matches the case is selected and associated action to it is performed.  
 Once all messages in mailbox are processed, actor suspends and wait for new incoming messages.
 
-
 ### Functional programming
 
 In functional programming, the methods should not have any **side effects**. They should communicate with their surrounding only by accepting the input and providing the result.  
@@ -1599,4 +1642,5 @@ Such methods can be called as Referentially transparent - meaning that for any g
 Functional languages encourage immutable data structures and referentially transparent methods.  
 A method's only act should be to compute and return a value without any side effect (following SRP - Single Responsibility Principle). That way methods become reliable and reusable.
 
-
+If you are using vars in code, it is probably not in functional style.  
+A function with Unit as a return type could be the function with side effects: If a function is not returning any interesting value then the only way the function can make difference is through some kind of side effect.
