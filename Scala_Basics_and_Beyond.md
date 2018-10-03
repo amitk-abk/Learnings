@@ -22,10 +22,10 @@ For more details check: [Why-Scala](https://www.lightbend.com/blog/why-scala)
 
 ### Scala Basics: General
 
-- Scala is a line-oriented language where statements may be terminated by semicolons (;) or newlines.
+- Scala is a line-oriented language where statements may be terminated by semicolons (;) or newlines. Semicolon is usually optional unless there are multiple statements on single line e.g. val s = "go"; doThis(s)
 > A semicolon at the end of a statement is usually optional.
 
-- A multi-line string literal is a sequence of characters enclosed in triple quotes """ ... """.
+- A multi-line string literal is a sequence of characters enclosed in triple quotes """ ... """. This is also called as "raw strings".
 
 The sequence of characters is arbitrary, except that it may contain three or more consecutive quote characters only at the very end.
 
@@ -56,21 +56,34 @@ This declares immutable variable called PI.
     val myVal :String;
 
 - Value types in scala are mostly wrapper over java's:  
-  **Byte, Short, Char, Int, Long, Float, Double, Boolean and Unit.**
+  **Byte, Short, Char, Int, Long, Float, Double, Boolean and Unit.**  
+  String resides in java.lang package and rest others are part of scala package. Scala's basic types have exact same range as of corresponding java types.
 
 - Scala does not support break or continue statement like Java does.
 
-- String interpolation:	It allows programmers to embed references to string variables inside string literals.
+- String interpolation: It allows programmers to embed references, expressions to string variables inside string literals.
 
 ```Scala
     e.g. val greet = "hello"
     val name = "Mark"
     s "$greet $name, have a great day!"
 
+    s "The answer to calculation is ${45 * 96.7}"
     Scala will substitute the values for $greet and $name.
 ```
 
-- you can instantiate objects, or class instances, using ***new***.
+You can place any expression after a dollar sign ($) in a processed string literal.  
+Scala provides two other string interpolators by default: raw and f. The raw string interpolator behaves like s, except it does not recognize character literal escape sequences.  
+The f string interpolator allows you to attach printf-style formatting instructions to embedded expressions.  
+**In Scala, string interpolation is implemented by rewriting code at compile time.**
+
+- you can instantiate objects, or class instances, using ***new***.  
+
+- Most of the scala operators are just syntax for ordinary method calls e.g. 1 + 5 actually means 1.+(5). It also means, class Int contains a method named **+** that takes an **Int** and returns an **Int** result. Actually, Int contains several overloaded + methods that take different parameter types e.g. Long, float, double etc.
+
+- In scala **any method call can be operator** as operators are not special language syntax so s.indexOf("abc") can be written in *operator notation* way as s indexOf "ABC" where indexOf is an operator.
+
+- In Scala, the empty parenthesis can be left off e.g. *s.toLowerCase()* can be written as *s.toLowerCase* and also as *s toLowerCase* in *operator notation* form.
 
 #### Expression v/s statements
 
@@ -268,7 +281,7 @@ val add = (x: Int, y: Int) => x + y
 println(add(1, 2))
 ```
 
-#### call-by-name parameter:
+#### call-by-name parameter
 
 A ***call-by-name*** mechanism passes a code block to the call and each time the call accesses the parameter, the code block is executed and the value is calculated.  
 It is used if we need to write a function that accepts as a parameter an expression that we don't want evaluated until it's called within our function.  
@@ -316,23 +329,23 @@ Another high level example:
     }
 ```
 
-##### Functions-with-named-arguments:
+##### Functions-with-named-arguments
 
-Named arguments allow you to pass arguments to a function in a different order.   
+Named arguments allow you to pass arguments to a function in a different order.  
 The syntax is simply that each argument is preceded by a parameter name and an equals sign.
 
 ```Scala
 e.g.
-	object Demo {
-	   def main(args: Array[String]) {
-		  printInt(b = 5, a = 7);
-	   }
+    object Demo {
+        def main(args: Array[String]) {
+            printInt(b = 5, a = 7);
+        }
 
-	   def printInt( a:Int, b:Int ) = {
-		  println("Value of a : " + a );
-		  println("Value of b : " + b );
-	   }
-}
+        def printInt( a:Int, b:Int ) = {
+            println("Value of a : " + a );
+            println("Value of b : " + b );
+        }
+    }
 ```
 
 ##### Functions with variable arguments
@@ -366,15 +379,15 @@ def main(args: Array[String]) {
 
 ```Scala
 e.g.
-	object Demo {
-	   def main(args: Array[String]) {
-		  println( apply( layout, 10) )
-	   }
+    object Demo {
+        def main(args: Array[String]) {
+            println( apply( layout, 10) )
+        }
 
-	   def apply(f: Int => String, v: Int) = f(v)
+        def apply(f: Int => String, v: Int) = f(v)
 
-	   def layout[A](x: A) = "[" + x.toString() + "]"
-	}
+        def layout[A](x: A) = "[" + x.toString() + "]"
+    }
 ```
 
 Also,  
@@ -389,11 +402,11 @@ Currying transforms a function that takes multiple parameters into a chain of fu
 
 ```Scala
 e.g.
-	Syntax
-		def strcat(s1: String)(s2: String) = s1 + s2
+    Syntax
+        def strcat(s1: String)(s2: String) = s1 + s2
 
-	Calling
-		strcat("foo")("bar")
+    Calling
+        strcat("foo")("bar")
 ```
 
 >f(a, b) -> a + b for this statement the same can be mentioned as f(a) that returns a function f' such that f'(b) -> a + b
@@ -403,24 +416,24 @@ Scala supports this currying by returning a function f' on first argument so as 
 
 ```Scala
 Another Example:
-class ui {
-	def updateUiElements() {
-		runInThreadGroup("basket") {
-			applyDiscountToBasket("basket")
-			updateCustomerBasket("basket")
-		}
+    class ui {
+        def updateUiElements() {
+            runInThreadGroup("basket") {
+                applyDiscountToBasket("basket")
+                updateCustomerBasket("basket")
+            }
 
-		runInThreadGroup("customer") {
-			updateOfferFor("customer")
-		}
-	}
+            runInThreadGroup("customer") {
+                updateOfferFor("customer")
+            }
+        }
 
-	def runInThreadGroup(group: String)(function: => Unit) {
-		new Thread(new ThreadGroup(group), new Runnable() {
-			def run(): Unit = function
-		}).start()
-	}
-}
+        def runInThreadGroup(group: String)(function: => Unit) {
+            new Thread(new ThreadGroup(group), new Runnable() {
+                def run(): Unit = function
+            }).start()
+        }
+    }
 ```
 
 ### Scala Class
@@ -469,6 +482,7 @@ Anonymous way to instantiate class:
 
 All fields and methods in a class are by default **public**.  
 You can instantiate objects, or class instances, using ***new***.  
+Scala classes do not have "static" members.
 
 ```Scala
 e.g. val str = new Array[String](3)  
@@ -479,7 +493,7 @@ e.g. val str = new Array[String](3)
 ```Scala
 e.g.
 
-class Customer(val name: String, val address: String) {	} 
+class Customer(val name: String, val address: String) { }
 
     //This is primary constructor with two parameters.
     //If no modifier is specified then the field is public
@@ -523,8 +537,10 @@ Use of ***this*** to create auxiallary constructor
 #### Companion Objects
 
 You can combine classes and objects in scala.  
-When you **create class and object** with ***same name in same source file*** then object is known as companion object.  
+When you **create class and object** with ***same name in same source file*** then object is known as companion object. And the class is called as **companion class** of the singleton object.  
 You use companion objects where you would mix static and non static.  
+
+> **A class and its companion object can access each other's private members.**
 
 ```Scala
 class Customer(val name: String, val address: String) {
@@ -542,6 +558,21 @@ object Customer {
 ```
 
 Companion objects are used to distinguish between methods and functions but keep the related functions close to a class they are related to.
+
+#### Object Equality
+
+To compare two objects for equality, you can use either == or its inverse !=. These operations actually apply to all objects, not just basic types.
+
+```Scala
+
+    e.g. you can use == to compare lists:
+    List(1, 2, 3) == List(1, 2, 3)
+
+    you can compare two objects that have different types
+    e.g. 1 == 1.0, List(1, 2, 3) == "hello"
+```
+
+**Scala provides a facility for comparing reference equality, as well, under the name eq.
 
 #### Extending class
 
@@ -591,7 +622,8 @@ class Point (xc: Int, yc: Int) {
 
 #### Singleton Objects
 
-Scala is more object-oriented than Java because in Scala, we cannot have static members. Instead, Scala has singleton objects.
+Scala is more object-oriented than Java because in Scala, we cannot have static members. Instead, Scala has singleton objects.  
+A singleton object definition looks like a class definition, except instead of the keyword class you use the keyword object.
 
   You create singleton using the keyword **object** instead of class keyword. It is language feature now.
 
@@ -613,6 +645,34 @@ Scala is more object-oriented than Java because in Scala, we cannot have static 
 
 Scala does not have static keyword but **members of singleton object are effectively static**.  
 ***Functions generally belong to singleton objects rather than class.***
+
+> One difference between classes and singleton objects is that singleton objects cannot take parameters, whereas classes can: you can't instantiate a singleton object with the new keyword, so you have no way to pass parameters to it.
+
+### Scala Application
+
+To run a scala program, provide the name of standalone singleton object with a main function that takes Array[String] as parameter and has a return type of Unit.
+
+```Scala
+example:
+    object adder {
+        def main(args: Array[String]): Unit = {
+            var sum = 0
+            for (arg <- args>)
+                sum += arg
+            println(sum)
+        }
+    }
+```
+
+> Scala implicitly imports members of packages **java.lang** and **scala**, as well as the members of a singleton object named **Predef** (which resides in package *scala*), into every Scala source file.
+
+And,
+> In contrast to java, the name of the file can be anything with extension being fixed as .scala. So you can name .scala files anything you want irrespective of the code that goes in it. Though recommended practise is as followed in java source file naming convention.
+
+And,
+> Scala distribution typically include fsc (fast scala compiler daemon).
+
+Running either of **scalac** or **fsc** commands will produce Java class files that you can then run via the scala command
 
 ### Inheritance
 
@@ -969,12 +1029,12 @@ as *Mon -> Tue -> Wed -> Thurs -> Fri -> Nil*  (it is like add element to head o
   This approach is not elegant as it exposed underlying implementation.  
   If the method name ends in a colon, the method is invoked on the right operand. Therefore, in *"Sat" :: weekEndDays*, the :: method is invoked on weekEndDays, passing in "Sat", like this: *weekEndDays.::("Sat")*.
 
-2. Prefered way  
+2.Prefered way  
 
 Using List() directly to create List.
 > val weekDays = List("Mon", "Tue", "Wed", "Thurs", "Fri")
 
-3. Creating a list by concatinating two lists:
+3.Creating a list by concatinating two lists:
 
 3.1. Using ::: operator  
     This is also right associative  
@@ -1025,39 +1085,45 @@ Each element is a tuple of the corresponding elements of the two lists.
 - **.sorted** : returns a new list sorted in "natural" order (e.g. weekDays.sorted)
 - **.contains**
 - **.startsWith**
--	**.endsWith**
+- **.endsWith**
 - **.sum**
 - **.product**
 - **.min**
 - **.max**
 
 **Higher order methods:**
+
 - **foreach**
 - **map**
--	**reduce**
--	**filter**
--	**partition**
--	**sortBy**
--	**fold**
--	**scan**
+- **reduce**
+- **filter**
+- **partition**
+- **sortBy**
+- **fold**
+- **scan**
 
-##### Scan family: scan, scanRight, scanLeft
+#### Scan family: scan, scanRight, scanLeft
+
 Takes two parameters, first being the initial value and second being the reduce function.  
 
 **Scan right:**
+
 - Scan right is right associative, the initial value is considered as right most & first value in consideration and then subsequently given reduce
 - operation is applied moving into list from it's right most values towards first item in list (i.e. nth item towards 1st item in list)
 - Initial value provided remains as is as last value (right most) in resultant list.
+
 ```Scala
 val numbers = List(10, 20, 30, 40, 50, 60)
 val result = numbers.scanRight(0)(_ - _)
-println(result)	======> List(-30, 40, -20, 50, -10, 60, 0)
+println(result) ======> List(-30, 40, -20, 50, -10, 60, 0)
 ```
 
 **Scan left:**
+
 - Scan left is left associative, the initial value is considerd as left most and first value in consideration, and then subsequently given reduce.
 - operation is applied movied into list from it's left most values towards right end (1st to nth item in list).
 - Initial value provided remains as is as first value (left most) in resultant list.
+
 ```Scala
 val numbers = List(10, 20, 30 , 40, 50, 60)
 val result = numbers.scanLeft(0)(_ - _)
@@ -1065,15 +1131,18 @@ println(result) ======> List(0, -10, -30, -60, -100, -150, -210)
 ```
 
 **Scan:**
+
 - Is mostly used from optimization perspective and it does not make any gurantee about scan direction, all is left for compiler to decide.
 
-##### Fold family: fold, foldRight, foldLeft 
+##### Fold family: fold, foldRight, foldLeft
 
 They can be considered as functions returning the last value of corresponding scan operation.  
 
 **foldRight:**
+
 - provides the last value from scanRight operation.
 - As scanRight starts from right most value and moves towards left, the left most value (i.e. in 1st position) in resultant list is the answer.
+
 ```Scala
 e.g.
 val numbers = List(10, 20, 30, 40, 50, 60)
@@ -1081,12 +1150,14 @@ val result = numbers.foldRight(0)(_ - _)        ========> -30
 ```
 
 **foldLeft:**
+
 - provides the last value from scanLeft operation.
 - As scanLeft starts from right most value and moves towards right, the right most value (i.e. in last position) in resultant list is the answer.
+
 ```Scala
 e.g.
 val numbers = List(10, 20, 30, 40, 50, 60)
-val result = numbers.scanLeft(0)(_ - _)			=========> -210
+val result = numbers.scanLeft(0)(_ - _) =========> -210
 ```
 
 **fold:**
@@ -1257,7 +1328,6 @@ Higher order methods of collections take in function objects and then go ahead a
 1. Higher order functions acting one iteam at a time e.g. Map, foreach, filter
 2. Higher order functions operating on multiple elements at a time e.g. Scan, Fold, Reduce.
 
-
 ### Exceptions
 
 All exceptions in scala are **runtime exceptions**. Catching exceptions uses pattern matching.  
@@ -1411,9 +1481,7 @@ Another example:
 val numbers = Array("Zero", "One", "Two")  
 Here, actually **apply** method is getting called such as:  
 val numbers = Array.apply("Zero", "One", "Two")  
-This **apply** method creates and returns a new array. 
-
-
+This **apply** method creates and returns a new array.  
 
 Example of **update method**
 
@@ -1618,7 +1686,6 @@ An actor can perform two basic operations: **message send** and **receive**.
 
 The **send** operation is denoted by ! (exclamation mark) and it sends message to an Actor e.g. messageReceiver ! msg, here messageReceiver is an Actor.  
 A **send is asynchronous**; that is, the sending actor can proceed immediately, without waiting for the message to be received and processed.
-
 
 Every **actor has a mailbox** in which incoming messages are queued. An actor handles messages that have arrived in its mailbox via a **receive** block.
 
