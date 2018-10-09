@@ -116,7 +116,9 @@ Expression blocks are enclosed in {}, last expression in the block is the return
 Expression blocks can be nested, each has it's own scope hence same named variable will have scope specific value.
 **The return value from the outer scope (before inner scope) is ignored.**
 
-***if/else, for loops (but not while loop), pattern matching*** (similar to switch statement in java) are few of major constructs that are statements in java but are expressions in scala. **It means they are rvalue in an expression, and they can be functionally composed (can be chained together)**:
+***if/else, for loops (but not while loop), pattern matching*** (similar to switch statement in java) are few of major constructs that are statements in java but are expressions in scala. **It means they are rvalue in an expression, and they can be functionally composed (can be chained together)**:  
+
+The if expression, in general, works like if in any other language.
 
 ```Scala
   val value1 = if (boolean expression) { expression block 1 } else { expression block 2 )
@@ -131,7 +133,7 @@ Expression blocks can be nested, each has it's own scope hence same named variab
 Here, ***if*** can be present without ***else*** clause and in that case the expression returns Nothing if boolean condition evaluates to false.
 
 ***For loop*** in scala are both statements and expression. Adding keyword **yield** on for loop transforms it to expression from statement.
-A **for loop with *yield*** will 'yield' a collection of the return values of each iteration of the loop.
+A **for loop with *yield*** will 'yield' a collection of the return values of ***each iteration*** of the loop.
 
 ```Scala
 var x = for (day <- daysOfWeekList) yield {
@@ -144,10 +146,29 @@ var x = for (day <- daysOfWeekList) yield {
 Returns>> x: List[String] = List("Monday, first day", "Tue", "Wed", "Thur", "Fri", "Sat", "Sunday, last day")
 ```
 
+The result includes all of the yielded values contained in a single collection. And, the type of the resulting collection is based on the kind of collections processed in the iteration clauses.  
+
+The syntax of a for-yield expression is like: ***for clauses yield loop***
+
 Basic **for expression:**  
 e.g. for(item <- items>) println(item)  
 Here, the println is applied to every item from items, both are on the either side of symbol <-  
-You can say "in" for the <- symbol. You can read ***for (item <- items)*** , therefore, as "for item in items."
+You can say "in" for the <- symbol. You can read ***for (item <- items)*** , therefore, as "for item in items."  
+
+Sometimes you don't want to iterate through a collection in its entirety; you want to filter it down to some subset. You can do this with a for expression by adding a filter, an if clause inside the for's parentheses.  
+e.g. val filesHere = (new java.io.File(".")).listFiles  
+    for (file <- filesHere if file.getName.endsWith(".scala"))  
+      println(file)  
+
+You can include more filters if you want.  
+
+
+**While loop**
+Scala's while loop behaves as in other languages. It has a condition and a body, and the body is executed over and over as long as the condition holds true.  
+Scala also has a do-while loop.  
+The while and do-while constructs are called "loops," not expressions, because they don't result in an interesting value.
+
+> **Almost all of Scala's control structures result in some value.** Scala's ***if, for, try and match*** can result in value.
 
 ##### Function and Expressions
 
@@ -169,6 +190,7 @@ Both function and expression blocks in scala:
 - closures - Functions that retain the referencing environment.
 - parameter groups - logical groups of parameters to a function.
 - Function is of type &lt;function1&gt;, &lt;function2&gt; (until &lt;function23&gt; & hence upto 23 arguments to max) family of **traits**.
+- Every function value is an instance of some class that extends one of several FunctionN traits in package scala, such as Function0 for functions with no parameters, Function1 for functions with one parameter, and so on.
 - Function definitions start with **def**, the function's name is followed by a comma-separated list of parameters in parentheses. A type annotation must follow every function parameter, preceded by a colon (e.g. x: Int, y: Int), because the Scala compiler does not infer function parameter types. After that parameter list separated with : is return type (e.g. : Int).
 
 ``` Scala
@@ -478,6 +500,14 @@ Anonymous way to instantiate class:
 }
 ```
 
+**To override the default implementation in class**: Use **override** modifier in front of a method definition.
+
+```Scala
+    class Adder(x: Int, y: Int) {
+        override def toString() = "Adding " + x + " and " + y
+    }
+```
+
 #### Classes and Objects
 
 All fields and methods in a class are by default **public**.  
@@ -520,9 +550,11 @@ object Customer {
 
 > ***Primary constructor is the only constructor that can invoke a base class constructor.***
 
-#### Auxiallary constructor
+#### Auxiliary constructor
 
-Use of ***this*** to create auxiallary constructor
+Constructors other than the primary constructor are called auxiliary constructors.  
+Use ***this*** to create Auxiliary constructor.  
+Auxiliary constructors in Scala start with ***def this(...)***.
 
 ```Scala
     def this(first: String, last: String) {
@@ -533,6 +565,9 @@ Use of ***this*** to create auxiallary constructor
 
     def this(first: String, last: String) = this (first, "", last)
 ```
+
+Every auxiliary constructor must have call to another constructor of the same class as its first statement. The invoked constructor can be main or another auxiliary one.  
+In scala, only primary constructor can invoke the superclass constructor.
 
 #### Companion Objects
 
@@ -847,10 +882,11 @@ case None => "Something bad happened"
 
 There is no switch statement in scala, it uses match expressions instead. It is match expression, hence like other expressions it can be rvalue
 and can be chained.
-It is similar to switch statements.</br>
-There is no fall through so at most one pattern matches.</br>
-There are no break statements in scala.</br>
-Matches can be on type, value or condition.</br>
+It is similar to switch statements.  
+There is no fall through so at most one pattern matches.  
+There are no break statements in scala.  
+Matches can be on type, value or condition.  
+In match, any kind of constant as well as other things, can be used in cases in scala, not just the integer-type, enum or string constants.  
 
 It looks like this:
 
@@ -1331,6 +1367,10 @@ Higher order methods of collections take in function objects and then go ahead a
 ### Exceptions
 
 All exceptions in scala are **runtime exceptions**. Catching exceptions uses pattern matching.  
+The behavior of this try-catch expression is the same as in other languages with exceptions.  
+Throwing an exception in Scala looks the same as in Java. You create an exception object and then throw it with the throw keyword.  
+Technically, an exception throw has type Nothing.  
+As with most other Scala control structures, try-catch-finally results in a value (unlike java which does not result in a value)
 
 ```Scala
 
@@ -1349,6 +1389,16 @@ try {
     } catch {
         case e: MalformedURLException => println("Bad url")
         case e: IOException => println("Problem reading data : " + e.getMessage)
+    }
+
+Example of try-catch-finally returning the value:
+
+    def getUrl(path: String) = {
+        try {
+            new URL(path)
+        } catch {
+            case e: MalformedURLException => new URL("http://wikipedia.com/correctURL")
+        }
     }
 
 ```
@@ -1711,3 +1761,7 @@ A method's only act should be to compute and return a value without any side eff
 
 If you are using vars in code, it is probably not in functional style.  
 A function with Unit as a return type could be the function with side effects: If a function is not returning any interesting value then the only way the function can make difference is through some kind of side effect.
+
+#### Immutable Object
+
+Immutable objects provide no way to alter object state once they are constructed. They can be freely passed around without having any fear of threads accidently altering their states. They form excellent choices as keys for hashtables as they would stay the same without alterations and bring predictability for corresponding object value to be found.
