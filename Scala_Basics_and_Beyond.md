@@ -144,6 +144,26 @@ var x = for (day <- daysOfWeekList) yield {
       }
 
 Returns>> x: List[String] = List("Monday, first day", "Tue", "Wed", "Thur", "Fri", "Sat", "Sunday, last day")
+
+Also,
+
+def getFilesMatching(query: String, matcher: (String, String) => boolean) = {
+    for (fileName <- filesListed; if matcher(fileName, query))
+        yield fileName
+}
+
+Above function can be called as:
+    def getFilesNameEndingWith(query: String) = getFilesMatching(query, _.endsWith(_))
+
+    def getFilesNameContaining(query: String) = getFilesMatching(query, _.contains(_))
+  
+    def getFilesNameMatchingRegex(query: String) = getFilesMatching(query, _.matches(_))
+
+Here, the function literal _.endsWith(_), used in the getFilesNameEndingWith method, means the same thing as:
+    (fileName: String, query: String) => fileName.endsWith(query)
+
+    The first underscore is a placeholder for the first parameter, the file name, and the second underscore a placeholder for the second parameter, the query string.
+
 ```
 
 The result includes all of the yielded values contained in a single collection. And, the type of the resulting collection is based on the kind of collections processed in the iteration clauses.  
@@ -161,7 +181,6 @@ e.g. val filesHere = (new java.io.File(".")).listFiles
       println(file)  
 
 You can include more filters if you want.  
-
 
 **While loop**
 Scala's while loop behaves as in other languages. It has a condition and a body, and the body is executed over and over as long as the condition holds true.  
@@ -192,6 +211,7 @@ Both function and expression blocks in scala:
 - Function is of type &lt;function1&gt;, &lt;function2&gt; (until &lt;function23&gt; & hence upto 23 arguments to max) family of **traits**.
 - Every function value is an instance of some class that extends one of several FunctionN traits in package scala, such as Function0 for functions with no parameters, Function1 for functions with one parameter, and so on.
 - Function definitions start with **def**, the function's name is followed by a comma-separated list of parameters in parentheses. A type annotation must follow every function parameter, preceded by a colon (e.g. x: Int, y: Int), because the Scala compiler does not infer function parameter types. After that parameter list separated with : is return type (e.g. : Int).
+- If the function you're calling performs an operation, use the parentheses. But if it merely provides access to a property, leave the parentheses off.
 
 ``` Scala
 Function example:
@@ -456,6 +476,22 @@ Another Example:
             }).start()
         }
     }
+
+Another example: (This is also example of loan pattern or execute around pattern)
+    def withPrintWriterForFile(fileToProcess: File)(fileOperation: PrintWriter => Unit) = {
+        val writer = new PrintWriter(fileToProcess)
+        try {
+            fileOperation(writer)
+        } finally {
+            writer.close()
+        }
+    }
+
+    Calling:
+        val fileToProcess = new File("timestamp.txt")
+        withPrintWriterForFile(fileToProcess) { writer => writer.println(new java.util.Date)
+  }
+
 ```
 
 ### Scala Class
@@ -508,11 +544,19 @@ Anonymous way to instantiate class:
     }
 ```
 
+Scala has two **namespaces**:  
+
+1. values: For fields, methods, packages and singleton objects.
+2. types: For class and trait names
+
+Scala places fields and methods into the same namespace and that is why user can override a parameterless method with a *val*
+
 #### Classes and Objects
 
 All fields and methods in a class are by default **public**.  
 You can instantiate objects, or class instances, using ***new***.  
-Scala classes do not have "static" members.
+Scala classes do not have "static" members.  
+In Scala, you can define classes and singleton objects inside other classes and singleton objects.  
 
 ```Scala
 e.g. val str = new Array[String](3)  
@@ -607,7 +651,9 @@ To compare two objects for equality, you can use either == or its inverse !=. Th
     e.g. 1 == 1.0, List(1, 2, 3) == "hello"
 ```
 
-**Scala provides a facility for comparing reference equality, as well, under the name eq.
+**Scala provides a facility for comparing reference equality, as well, under the name eq.  
+
+The equality operation == in Scala is designed to be transparent with respect to the type's representation. For value types, it is the natural (numeric or boolean) equality. For reference types other than Java's boxed numeric types, == is treated as an alias of the equals method inherited from Object.
 
 #### Extending class
 
@@ -713,12 +759,25 @@ Running either of **scalac** or **fsc** commands will produce Java class files t
 
 Inheritance in scala can be from class or from traits.  
 Like java a scala class can have only a single super class, but it can mix in as many traits as required.  
+Like java in scala, user can add ***final*** modifier keyword before member to ensure that it can not be overridden by subclasses.  
+To ensure that an entire class not be subclassed, add a ***final*** modifier to the class declaration.  
 
 ```Scala
+class Customer(name: String, address:String) {
+    def total: Double = {
+        1.0
+    }
+
+    final def printDetails(): Unit = {
+        println("Customer name:" + name)
+        println("Customer address:" + address)
+    }
+}
+
 class DiscountedCustomer(name: String, address: String) extends Customer(name, address) {
-        override def total: Double = {
-           super.total * 0.90
-        }
+    override def total: Double = {
+        super.total * 0.90
+    }
 }
 
 //The base class constructor Customer(name, address) is invoked by primary constructor of the derived class DiscountedCustomer(name: String, address: String)
@@ -739,11 +798,11 @@ object DiscountedCustomer {
 }
 ```
 
-In scala you can use the keyword ***abstract*** to denote the class that can not be instantiated but you don't need to qualify methods as such, just leave the implementation off. No implementation here means it is just abstract.
+In scala you can use the keyword ***abstract*** to denote the class that can not be instantiated but you don't need to qualify methods as such, just leave the implementation off. No implementation here means it is just abstract (which is unlike java).
 
 ```Scala
         abstract class AbstractCustomer {
-            def total : Double  ---------------> Un-implemented method
+            def total : Double  ---------------> Un-implemented method *declared* here
         }
 
         class DiscountedCustomer extends AbstractCustomer {
@@ -753,11 +812,20 @@ In scala you can use the keyword ***abstract*** to denote the class that can not
                 basket.value*0.90
             }
        }
+
+    Here the method total is defined as without any parameters, it is called as parameterless-method.
+    The recommended convention is to use a parameterless method whenever there are no parameters.
+    In principle it's possible to leave out all empty parentheses in Scala function calls.
 ```
 
 ### Traits in scala ~= Interfaces in java
 
+Traits in scala are considered very much in line with interfaces (java 8 onwards) in Java. They form a basic unit of code reuse.  
+Trait encapsulates method and field definitions, which can be reused by mixing them into classes (a class can mix in any number of traits using with or extends keywords).  
+
 ```Scala
+    A trait definition looks like a class definition in scala. Following is comparision of trait definition and java interface definition.
+
     //java
     public interface Readable {
        public int read(CharBuffer buffer);
@@ -786,11 +854,16 @@ In scala you can use the keyword ***abstract*** to denote the class that can not
 Traits can have both abstract and concrete methods and have state.  
 A class can implement any number of traits just as a class can implement any number of interfaces.  
 Traits can not have constructor arguments.  
+You can use the ***extends*** keyword to mix in a trait; in that case you implicitly inherit the trait's superclass.  
+If you wish to mix a trait into a class that explicitly extends a superclass, you use extends to indicate the superclass and ***with*** to mix in the trait.  
 
 Scala allows class to extend more than one trait and uses **process of linearization** to resolve duplicate methods in traits:
 
-- specifically scala puts all the traits in a line and resolves calls to super while going from right to left along the line.
+- specifically scala puts all the traits in a line and resolves calls to ***super*** while going from right to left along the line.
 - which means that the order you define traits in a class definition is important.
+- The ***super*** calls in trait are dynamically bound.
+
+A trait can ***extend*** another class, which means it declares that class as it's ***superclass*** (superclass to the trait). This declaration means that, this trait can only be mixed into a class that also ***extends*** the ***same class***.
 
 #### Default implementation in trait
 
@@ -819,7 +892,7 @@ It helps programmers to not specify the types of variables, function return type
 
 Everything in scala: all values and variables are instances of a class.
 
-***Any*** is universal base class in scala.  
+***Any*** is universal base class in scala. Every class inherits from this class.  
 **Any** is the supertype of all types, also called the **top type**.  
 It defines certain universal methods such as **equals**, **hashCode**, and **toString**.  
 **Any** has two direct subclasses: **AnyVal** and **AnyRef**.
@@ -839,7 +912,7 @@ Every user-defined type in Scala is a subtype of **AnyRef**.
 ***None*** is a value in scala (not type) while ***Nothing*** is a type (not value) that is inherited from **Any**
 
 ***Scala.Null*** is at bottom of all reference hierarchy. **Null** extends all reference types.  
-***Scala.Nothing*** is at bottom of all value types (Short, Char, Int etc), it extends all value types and **Scala.Null** as well.
+***Scala.Nothing*** is at bottom of all value types (Short, Char, Int etc), it extends all value types and **Scala.Null** as well. Nothing is a subclass of every other class in scala heirarchy. One use of Nothing is that it signals abnormal termination.  
 
 == will delegate the call to equals().
 > i.e. new String("A") == new String("A") same as *new String("B").equals(new String("B"))*
@@ -873,8 +946,8 @@ val pi = piOption getOrElse "Oops, pi should be 3.14"
 ```Scala
 piOption match
 {
-case Some(pi) => pi
-case None => "Something bad happened"
+    case Some(pi) => pi
+    case None => "Something bad happened"
 }
 ```
 
@@ -953,9 +1026,10 @@ They reside in **scala.collection.mutable** namespace.
 **Arrays:**
 
 Fixed length, however contents can be modified.  
-Arrays are simply instances of classes like any other class in Scala.  
+Arrays are simply instances of classes like any other class in Scala. Arrays in Scala are represented as Java arrays.  
 Both mutable and immutable collections implement java **iterable** interface.  
-Arrays in Scala are accessed by placing the index inside parentheses.
+Arrays in Scala are accessed by placing the index inside parentheses.  
+The ++ operation concatenates two arrays.  
 
 ```Scala
 Array example: val greetStrings = new Array[String](3)
@@ -1100,9 +1174,13 @@ val daysAgain = List(weekDays, weekendDays).flatten
 ```Scala
     dayIndices zip dayIndices
     creates list like List((1,1), (2,2), (3,3), (4,4))
+
+    Array(1, 2, 3) zip Array("a", "b")
+    creates Array((1, "a"), (2, "b"))
 ```
 
 Each element is a tuple of the corresponding elements of the two lists.  
+If one of the two operand arrays is longer than the other, zip will drop the remaining elements.  
 
 > Class List does offer an "append" operation — it's written **:+**
 > But this operation is rarely used, because the time it takes to append to a list grows linearly with the size of the list, whereas prepending with :: takes constant time.
