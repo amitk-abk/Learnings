@@ -862,6 +862,7 @@ Scala allows class to extend more than one trait and uses **process of lineariza
 - specifically scala puts all the traits in a line and resolves calls to ***super*** while going from right to left along the line.
 - which means that the order you define traits in a class definition is important.
 - The ***super*** calls in trait are dynamically bound.
+- When you instantiate a class with *new*, Scala takes the class, and all of its inherited classes and traits, and puts them in a *single, linear order*. Then, whenever you call *super* inside one of those classes, the invoked method is the next one up the chain. If all of the methods but the last call super, the net result is stackable behavior.
 
 A trait can ***extend*** another class, which means it declares that class as it's ***superclass*** (superclass to the trait). This declaration means that, this trait can only be mixed into a class that also ***extends*** the ***same class***.
 
@@ -954,8 +955,8 @@ piOption match
 #### Pattern matching
 
 There is no switch statement in scala, it uses match expressions instead. It is match expression, hence like other expressions it can be rvalue
-and can be chained.
-It is similar to switch statements.  
+and can be chained. It always results in a value.  
+It is similar to switch statements from java.  
 There is no fall through so at most one pattern matches.  
 There are no break statements in scala.  
 Matches can be on type, value or condition.  
@@ -968,7 +969,10 @@ value match {
     case pattern guard => expression
     case ...
     case ...
+    case _ => ......  //This is catch-all (like default)
 }
+
+The syntax is: selector match { alternatives }
 ```
 
 Each case is made up of **patterns**, optionally a **guard condition** and **an expression** to evaluate on successful match.
@@ -1777,12 +1781,19 @@ The above can be implemented using for syntax as:
 ### Case Classes
 
 Scala has a special type of class called a “case” class. By default, **case classes are immutable and compared by value**.  
+Classes with ***case*** modifier are called case classes.  
 
 e.g. **case class Point(x: Int, y: Int)**  
 
-You can instantiate case classes without new keyword.
+Using the modifier makes the Scala compiler add some syntactic conveniences to your class.  
+
+1. It adds a factory method with the name of the class, which means you can skip ***new*** from class creation e.g. Point p = Point(4, 5)
+2. All arguments in the parameter list of a case class implicitly get a val prefix, so they are maintained as fields. So you can access as p.x and p.y
+3. The compiler adds "natural" implementations of methods toString, hashCode, and equals to class. In scala, **==** always delegates to ***equals*** so the elements of case class are always compared structurally e.g. p1 ==p2
+4. Compiler adds a copy method to class for making modified copies. This method is useful for making a new instance of the class that is the same as another one except that one or two attributes are different e.g. p.copy(4, 5)
 
 ```Scala
+    You can instantiate case classes without *new* keyword.
 
     val point = Point(1, 2)
     val anotherPoint = Point(1, 2)
@@ -1801,6 +1812,8 @@ And they are compared by value.
     }
 
 ```
+
+Case classes are Scala's way to allow pattern matching on objects without requiring a large amount of boilerplate.  
 
 ### Multi-threading
 
@@ -1829,6 +1842,22 @@ def receive {
 
 A receive block can contain number of cases that each query the mailbox with a pattern - message pattern. As per pattern matching, the first message in the mailbox that matches the case is selected and associated action to it is performed.  
 Once all messages in mailbox are processed, actor suspends and wait for new incoming messages.
+
+### Scala imports
+
+In scala the *package* keyword is used to define the package to which the code belongs and *import* is used to import the piece of information required. This is very much like java.  
+But in scala the import can rename the object. The renaming clause is used for the same. This renaming clause is always in the form "{original-name => new-name}"  
+e.g. import companies.{google => alphabet}. This offers a benefit of avoiding name collesions in case of having same named import from scala and java.  
+
+In scala you can exclude something from importing as well e.g. import org.comp.intro.{detailed => _}, here the detailed object is excluded from import.  
+
+The catch-all import is presented by _. e.g. import org.mycomp.rules._ it imports all the rules.  
+
+There are some (following) implicit imports (done by default) in each scala program:
+
+    1. java.lang._
+    2. scala._      Contains standard scala library. The scala import overshadows the java.lang import.
+    3. Predef._     Contains many definitions of types, methods, and implicit conversions that are commonly used on Scala programs.
 
 ### Functional programming
 
