@@ -594,6 +594,18 @@ object Customer {
 
 > ***Primary constructor is the only constructor that can invoke a base class constructor.***
 
+The **private** constructor:
+
+The primary constructor can be hidden by declaring class parameter list as private & adding private modifier in front of the class parameter list. It makes the constructore as private: it can be accessed only from within the class itself and its companion object.
+
+```Scala
+
+    class Person private (private val name: String, private val age: Int)
+
+    //It privents call of constructor to create object. Following gives error: val p: Person = new Person("A", 20)
+    //So use auxiliary constructor instead.
+```
+
 #### Auxiliary constructor
 
 Constructors other than the primary constructor are called auxiliary constructors.  
@@ -1047,7 +1059,36 @@ greetStrings(2) = "world!\n"
 for(i <- 0 to 2) println(greetStrings(i))
 ```
 
-When you apply parentheses surrounding one or more values to a variable, Scala will transform the code into an invocation of a method named apply on that variable. So **greetStrings(i)** gets transformed into **greetStrings.apply(i)**. Thus accessing an element of an array in Scala is simply a method call like any other.
+When you apply parentheses surrounding one or more values to a variable, Scala will transform the code into an invocation of a method named **apply** on that variable. So **greetStrings(i)** gets transformed into **greetStrings.apply(i)**. Thus accessing an element of an array in Scala is simply a method call like any other.
+
+> Scala treats arrays as nonvariant (rigid). So Array[String] is not considered to conform to an Array[Any]
+
+**ArrayBuffer:**
+
+It is similar to Array but addition and removal of elements from beginning and end of the sequense is possible. These operations are constant to linear time on average.  
+It is part of scala.collection.mutable package.  
+When you create an ArrayBuffer, you must specify a type parameter.  
+An element can be appended to it using += method.  
+An element can be prepended to it using +=: method.
+
+```Scala
+    import scala.collection.mutable.ArrayBuffer
+
+    val numBuff = new ArrayBuffer[Int]()
+
+    //Append operation
+    numBuff += 1
+    numBuff += 2
+    numBuff += 3
+
+    //Prepend operation
+    -1 +=: numBuff
+    -2 +=: numBuff
+    -3 +=: numBuff
+
+    println(numBuff)
+    //prints ArrayBuffer(-3, -2, -1, 1, 2, 3)
+```
 
 #### Tuples
 
@@ -1128,6 +1169,10 @@ To call it using tuple:
 - Immutable lists are of fixed length and the objects i.e. elements inside the list can not be changed once list is created.
 - They are singly linked list and terminated with Nil (special value, technically it is list of nothing i.e. List[Nothing]).
 - Lists are indexed starting from 0.
+- Like Arrays Lists are homogeneous i.e. all the elements of the lists are of same type.
+- The lists in scala are covariant i.e. for each pair of types A and B, if A is subtype of B then List[A] is subtype of List[B]. e.g. List[String] is subtype of List[Object].
+- The type of empty list is List[Nothing]. Also, List[Nothing] is a subtype of List[T] for any given type T.
+- Lists support fast addition and removal of items to the beginning of the list, but they do not provide fast access to arbitrary indexes because the implementation must iterate through the list linearly.
 
 **Ways of creating list:**
 
@@ -1142,6 +1187,7 @@ as *Mon -> Tue -> Wed -> Thurs -> Fri -> Nil*  (it is like add element to head o
   It takes element on it's right and add on it to its left.
   This approach is not elegant as it exposed underlying implementation.  
   If the method name ends in a colon, the method is invoked on the right operand. Therefore, in *"Sat" :: weekEndDays*, the :: method is invoked on weekEndDays, passing in "Sat", like this: *weekEndDays.::("Sat")*.
+  x :: xs is treated as ::(x, xs) like infix operator. The class ***scala.::*** builds non-empty lists. So, :: exists twice in Scala, once as a name of a class in package scala and again as a method in class List. The effect of the method :: is to produce an instance of the class scala.::.
 
 2.Prefered way  
 
@@ -1156,6 +1202,8 @@ Using List() directly to create List.
 ```Scala
    e.g. val days = weekDays ::: weekendDays
 ```
+
+    This is implemented as method in class List.
 
 3.2. Using ++ operator  
 
@@ -1189,6 +1237,18 @@ If one of the two operand arrays is longer than the other, zip will drop the rem
 > Class List does offer an "append" operation — it's written **:+**
 > But this operation is rarely used, because the time it takes to append to a list grows linearly with the size of the list, whereas prepending with :: takes constant time.
 
+**Sorting** the list:
+
+It can be denoted by operation ***lst sortWith before***, where lst is the list, sortWith is the method and before is a function that can be used to compare two elements of the list lst.
+
+```Scala
+val numList = List(4, 5, 9, 1, 2, -9, -3, -5, 0)
+val sortedList = numList sortWith (_ < _)
+//Generates List(-9, -5, -3, 0, 1, 2, 4, 5, 9)
+```
+
+> The method sortWith performs merge sort.
+
 **List Methods:**  
 
 - **.head** : returns the element at head of the list (weekDays.head)
@@ -1219,6 +1279,8 @@ If one of the two operand arrays is longer than the other, zip will drop the rem
 - **sortBy**
 - **fold**
 - **scan**
+
+***map*** returns a list of lists, ***flatMap*** returns a single list in which all element lists are concatenated.
 
 #### Scan family: scan, scanRight, scanLeft
 
@@ -1297,6 +1359,33 @@ e.g.
 val numbers = List(10, 20, 30, 40, 50, 60)
 val result = numbers.reduceLeft(_ - _)    =========> -190
 
+```
+
+#### Mutable Lists: ListBuffer
+
+It is mutable list from scala.collection.mutable package.  
+ListBuffer provides constant time append and prepend operations.  
+Elements can be ***appended*** using += operator and ***prepended*** with +=: operator.  
+A List can be obtained by calling toList on ListBuffer.
+
+```Scala
+    import scala.collection.mutable.ListBuffer
+
+    val numBuff = new ListBuffer[Int]
+
+    //Append operation
+    numBuff += 1
+    numBuff += 3
+    numBuff += 7
+
+    //Prepend operation
+    -1 +=: numBuff
+    -5 +=: numBuff
+    -7 +=: numBuff
+
+    val primeNumList = numBuff.toList
+
+    //Gets List(-7, -5, -1, 1, 3, 7)
 ```
 
 #### Maps
@@ -1414,11 +1503,6 @@ Although mutable sets offer an actual += method, immutable sets do not.
 >val someNumbersImmutable = someNumbers.toList  
 >val stateCodesImmutable = stateCodes.toMap  
 >val stateSetImmutable = stateSet.toSet  
-
-#### Arrays
-
-Fixed lenght but elements can be changed.  
-Creating array: val daysOfWeek = Array("Mon", "Tue", "Wed", "Thur", "Fri")  
 
 #### util.Try
 
