@@ -42,6 +42,20 @@ This declares immutable variable called PI.
   > Commonly used collections are immutable too.  
   > Modifying an immutable collection returns a new collection, leaving the original unchanged.
 
+If you prefix a *val* definition with a *lazy* modifier, the initializing expression on the right-hand side will only be evaluated the first time the *val* is used.
+
+```Scala
+    def main(args: Array[String]): Unit = {
+        lazy val x = { println("Initializing x"); 5}
+
+        println("-------------------------------------")
+        val y = { println("Initializing Y"); 15}
+    }
+
+    //prints "Initializing Y"
+    //The initialization of x is deferred until the first time x is used
+```
+
 - Mutable data items are created using 'var' e.g. var thisCanChange = 10
 
 - Multiple assignments:  
@@ -132,7 +146,8 @@ The if expression, in general, works like if in any other language.
 
 Here, ***if*** can be present without ***else*** clause and in that case the expression returns Nothing if boolean condition evaluates to false.
 
-***For loop*** in scala are both statements and expression. Adding keyword **yield** on for loop transforms it to expression from statement.
+***For loop*** in scala are both statements and expression. Adding keyword **yield** on for loop transforms it to expression from statement.  
+Generally, a for expression is expressed as form: ***for(seq) yield expr***,.Here, seq is a sequence of *generators, definitions, and filters*, with semicolons between successive elements.  
 A **for loop with *yield*** will 'yield' a collection of the return values of ***each iteration*** of the loop.
 
 ```Scala
@@ -164,11 +179,31 @@ Here, the function literal _.endsWith(_), used in the getFilesNameEndingWith met
 
     The first underscore is a placeholder for the first parameter, the file name, and the second underscore a placeholder for the second parameter, the query string.
 
+In following, for expression contains one generator, one definition and one filter:
+    for (p <- persons; n = p.name; if (n startsWith "To"))
+        yield n
+
+    The same can be written as:
+        for {
+            p <- persons              // a generator
+            n = p.name                // a definition
+            if (n startsWith "To")    // a filter
+        } yield n
 ```
 
 The result includes all of the yielded values contained in a single collection. And, the type of the resulting collection is based on the kind of collections processed in the iteration clauses.  
 
-The syntax of a for-yield expression is like: ***for clauses yield loop***
+The syntax of a for-yield expression is like: ***for clauses yield loop***.  
+
+Every for expression starts with a generator.  
+If there are several generators in a for expression, later generators vary more rapidly than earlier ones.  
+
+```Scala
+    for (x <- List(1, 2); y <- List("one", "two"))
+         yield (x, y)
+
+    Result:List[(Int, String)] = List((1,one), (1,two), (2,one), (2,two))
+```
 
 Basic **for expression:**  
 e.g. for(item <- items>) println(item)  
@@ -830,6 +865,8 @@ In scala you can use the keyword ***abstract*** to denote the class that can not
     In principle it's possible to leave out all empty parentheses in Scala function calls.
 ```
 
+>Abstract method declarations may be implemented by both concrete method definitions and concrete *val* definitions.
+
 ### Traits in scala ~= Interfaces in java
 
 Traits in scala are considered very much in line with interfaces (java 8 onwards) in Java. They form a basic unit of code reuse.  
@@ -1172,7 +1209,8 @@ To call it using tuple:
 - Like Arrays Lists are homogeneous i.e. all the elements of the lists are of same type.
 - The lists in scala are covariant i.e. for each pair of types A and B, if A is subtype of B then List[A] is subtype of List[B]. e.g. List[String] is subtype of List[Object].
 - The type of empty list is List[Nothing]. Also, List[Nothing] is a subtype of List[T] for any given type T.
-- Lists support fast addition and removal of items to the beginning of the list, but they do not provide fast access to arbitrary indexes because the implementation must iterate through the list linearly.
+- Lists support fast addition and removal of items to the beginning of the list, but they do not provide fast access to arbitrary indexes because the implementation must iterate through the list linearly.  
+- Lists are not "built-in" as a language construct in Scala; they are defined by an ***abstract class List*** in the *scala* package, which comes with two subclasses for :: and Nil.
 
 **Ways of creating list:**
 
@@ -1182,8 +1220,7 @@ To call it using tuple:
 e.g. val weekDays = "Mon" :: "Tue" :: "Wed" :: "Thurs" :: "Fri" :: Nil
 ```
 
-  It is right associative i.e. it starts at extreme right and works to left i.e. it starts with Nil and keeps on adding elements to its right making it.  
-as *Mon -> Tue -> Wed -> Thurs -> Fri -> Nil*  (it is like add element to head of singly linked list)
+  It is right associative i.e. it starts at extreme right and works to left i.e. it starts with Nil and keeps on adding elements to its right (head i.e. at the beginning) making it as *Mon -> Tue -> Wed -> Thurs -> Fri -> Nil*  (it is like add element to head of singly linked list)
   It takes element on it's right and add on it to its left.
   This approach is not elegant as it exposed underlying implementation.  
   If the method name ends in a colon, the method is invoked on the right operand. Therefore, in *"Sat" :: weekEndDays*, the :: method is invoked on weekEndDays, passing in "Sat", like this: *weekEndDays.::("Sat")*.
@@ -1898,6 +1935,98 @@ And they are compared by value.
 ```
 
 Case classes are Scala's way to allow pattern matching on objects without requiring a large amount of boilerplate.  
+
+### Implicit Conversions
+
+Implicits are a powerful, code-condensing feature of Scala.  
+Implicit definitions are the ones that compiler can insert in the program in order to fix any of type errors that it may encounter.  
+For example, if ***t1 - t2*** fails to perform due to type check error, then compiler is allowed to change it to ***transform(t1) - t2***, where ***transform*** does *implicit conversion*. If ***transform*** alters *t1* such that it now has **-** method onto it, then this change may fix the problem so that now it is type compatible to perform ***t1 - t2*** and overall program runs fine.  
+
+The ***implicit*** keyword is used to mark the declarations that compiler can use to perform conversions and use them as implicits. It can be used for any variable, object definition and function.
+
+This inserted implicit conversion must be associated with the source or target type of the conversion so that scala will consider implicit conversions which are in scope (that includes companion object). And at a time only one implicit conversion is inserted. But, if the code is valid per type check in first place, no implicit converion is performed.  
+
+1. Implicit conversions to an expected type let user use one type in a context where a different type is expected.
+    Whenever the compiler sees an X, but needs a Y, it will look for an implicit function that converts X to Y.
+
+    ```Scala
+        implicit def doubleToInt(x: Double) = x.toInt
+        val x: Int = 3.5
+    ```
+
+2. Conversions of the receiver let user adapt the receiver of a method call (i.e., the object on which a method is invoked), if the method is not applicable on the original type.
+
+3. Simulating new Syntax: For example in map creation using -> e.g. Map(1 -> "one", 2 -> "two", 3 -> "three"). The symbol -> is actually a method of the class ArrowAsoc from scala.Predef (i.e. scala preamble). In case of Map creation, scala compiler inserts implicit conversion from 1 (Int) to ArrowAssoc to satisfy the type check needed for use of ->. This is also known as "rich wrappers".
+
+```Scala
+    Implicit method example:
+
+    trait Action {
+        def performAction(): Unit
+    }
+
+    abstract class ActionPerformer extends Action {  
+    }
+
+    class Item {
+        private var performer: Action = _
+
+        def addPerformer(performerInp: Action) {
+            performer = performerInp
+        }
+
+        def perform(): Unit = {
+            performer.performAction()
+        }  
+    }
+
+    class TestImplicit {
+        def doIt() : Unit = {
+            val item = new Item
+            item.addPerformer(new ActionPerformer() {
+                def performAction(): Unit = { println("Item action is performed") }
+            })
+            item.perform()
+        }
+
+        implicit def function2ImplicitActionPerformer (performAction1: Unit => Unit) = {
+            new ActionPerformer() {
+                def performAction(): Unit = performAction1()
+            }
+        }
+
+        def doItImplicit(): Unit = {
+            val item = new Item
+            item.addPerformer(function2ImplicitActionPerformer((_: Unit) => println("Implicit item action is performed")))
+            item.perform()
+        }
+    }
+
+    object TestImplicit {
+        def main(args: Array[String]) : Unit = {
+            val testImplicit = new TestImplicit
+            testImplicit.doIt()
+            testImplicit.doItImplicit()
+        }
+    }
+```
+
+#### Implicit Class
+
+An implicit class is preceded by Implicit keyword.  
+Compiler generates an implicit conversion from class's constructor to the class itself.  
+Such classes are used for "rich wrappers".  
+An implicit class cannot be a case class, and its constructor must have exactly one parameter.  
+An implicit class must be located within some other object, class, or trait.  
+
+#### Choosing between conversions
+
+>If there are more than one implicit conversions applicable then if one of the available conversions is strictly more specific than the others, then the compiler will choose the more specific one.
+
+To be more precise, one implicit conversion is more specific than another if one of the following applies:
+
+1. The argument type of the former is a subtype of the latter's.
+2. Both conversions are methods, and the enclosing class of the former extends the enclosing class of the latter.
 
 ### Multi-threading
 
